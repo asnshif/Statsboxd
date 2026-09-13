@@ -1,8 +1,11 @@
 <script>
   import SharedPage from './page.svelte';
+  import AppFile from './AppFile.svelte';
+  import AppRss from './AppRss.svelte';
   import {baseUrl} from "./config.js"
 
   let data = {}
+  let activeTab = 'upload' // 'upload' or 'rss'
 
   async function getLbdWatched(username, id="", limit=0, offset=0, session=""){
     let watched = []
@@ -91,7 +94,72 @@
         {#if data.id !== undefined }
             <SharedPage data={data} />
         {:else}
-            <p>Loading</p>
+            <!-- Input Method Tabs -->
+            <div class="inputMethodTabs">
+              <button 
+                class="tabBtn {activeTab === 'upload' ? 'active' : ''}"
+                on:click={() => activeTab = 'upload'}
+              >
+                📁 Upload ZIP
+              </button>
+              <button 
+                class="tabBtn {activeTab === 'rss' ? 'active' : ''}"
+                on:click={() => activeTab = 'rss'}
+              >
+                📡 RSS Feed
+              </button>
+            </div>
+
+            <!-- Tab Content -->
+            {#if activeTab === 'upload'}
+              <AppFile />
+            {:else}
+              <AppRss />
+            {/if}
         {/if}
     {/if}
 </main>
+
+<style>
+  .inputMethodTabs {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    padding: 20px;
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+    background: rgba(0, 0, 0, 0.8);
+    border-radius: 8px;
+    backdrop-filter: blur(10px);
+  }
+
+  .tabBtn {
+    padding: 10px 20px;
+    font-size: 14px;
+    border: 2px solid #00e054;
+    background: transparent;
+    color: #00e054;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 500;
+  }
+
+  .tabBtn:hover {
+    background: rgba(0, 224, 84, 0.1);
+    transform: translateY(-2px);
+  }
+
+  .tabBtn.active {
+    background: #00e054;
+    color: #000;
+    box-shadow: 0 0 20px rgba(0, 224, 84, 0.5);
+  }
+
+  main {
+    padding-top: 80px;
+  }
+</style>
